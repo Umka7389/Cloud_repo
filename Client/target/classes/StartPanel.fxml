@@ -1,0 +1,33 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<VBox fx:controller="StartPanelController" stylesheets="styles.css"
+      xmlns:fx="http://javafx.com/fxml" fx:id="SceneBackground">
+    <AnchorPane fx:id="anchorPane" >
+        <Label fx:id="description" layoutX="40" layoutY="555" opacity="0.5">... your favorite storage.</Label>
+        <Label fx:id="messageToUser" layoutX="587.5" layoutY="70"
+               style="-fx-text-fill:white; -fx-font-size: 15; -fx-font-weight: bold"/>
+        <VBox layoutX="530" layoutY="100" spacing="6" alignment="CENTER">
+            <TextField promptText="Enter login" prefWidth="230" layoutY="50" prefHeight="30" fx:id="loginField"/>
+            <PasswordField promptText="Enter password" prefWidth="230" prefHeight="30" fx:id="passwordField"/>
+        </VBox>
+        <Button fx:id="entryButton"  prefWidth="130" layoutY="190" layoutX="583" onAction="#sendAuthMessage">Enter</Button>
+        <Label id="registrationNotification" layoutX="565" layoutY="240" prefWidth="200">Do not have account?</Label>
+        <Button fx:id="registrationButton" layoutX="583" layoutY="280" prefWidth="130" onAction="#showRegistrationForms">Register</Button>
+        <Label visible="false" fx:id="registrationSuccessNotification" textFill="white" opacity="0.7"
+               text="You've successfully registered!" layoutX="543" layoutY="330"
+               style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+        <Button fx:id="cancelRegistrationButton" layoutX="573" layoutY="280" prefWidth="150" onAction="#cancelRegistration"  visible="false">
+            Cancel registration</Button>
+        <VBox visible="false" fx:id="registrationBlock" layoutY="340" layoutX="530" spacing="8" alignment="CENTER">
+            <Label fx:id="registrationMessage" layoutY="300" layoutX="620" textFill="white"
+                   style="-fx-font-size: 14;-fx-font-weight: bold;"/>
+            <TextField promptText="Enter your login" fx:id="registrationLoginForm" prefHeight="30" prefWidth="230"/>
+            <PasswordField promptText="Enter your password" fx:id="registrationPassForm" prefHeight="30"
+                           prefWidth="230"/>
+            <PasswordField promptText="Repeat your password" fx:id="repeatPassForm" prefHeight="30"
+                           prefWidth="230"/>
+            <Button layoutY="460" layoutX="613" prefWidth="130" fx:id="finalRegistrationButton" visible="false" onAction="#sendRegMessageToServer">Register!</Button>
+        </VBox>
+    </AnchorPane>
+</VBox>
