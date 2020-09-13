@@ -128,7 +128,7 @@ public class StartPanelController implements Initializable {
             if (serverMessage.toString().startsWith("userIsValid")) {
                 String[] recieveLogin = serverMessage.toString().split("±");
                 String login = recieveLogin[1];
-                //CurrentLogin.setCurrentLogin(login);
+                CurrentLogin.setCurrentLogin(login);
                 authorizeAndSwitchToMainPanel(login);
             } else if (serverMessage.toString().startsWith("wrongPassword")) {
                 Platform.runLater(() -> {
