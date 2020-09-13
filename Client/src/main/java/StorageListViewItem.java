@@ -1,3 +1,5 @@
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -14,24 +16,12 @@ import java.io.InputStream;
 public class StorageListViewItem extends ListCell<StorageItem> {
 
     FXMLLoader localStorageItemLoader;
-    public CheckBox isLocalItemChecked;
     public Label localItemName;
     public Label localItemSize;
     public Label localItemModified;
     public Label fileIcon;
     public VBox localStorageItemCell;
 
-
-
-    @Override
-    public void updateSelected(boolean selected) {
-        super.updateSelected(selected);
-        if (selected){
-            isLocalItemChecked.setSelected(true);
-        }else{
-            isLocalItemChecked.setSelected(false);
-        }
-    }
 
     @Override
     protected void updateItem(StorageItem item, boolean empty) {
@@ -72,7 +62,7 @@ public class StorageListViewItem extends ListCell<StorageItem> {
                     size.setText(localItemSize.getText());
                     localItemSize.setTooltip(size);
                 }
-                isLocalItemChecked.setSelected(item.isChosen());
+
                 localItemModified.setText("" + item.getLastModificationDate());
                 Tooltip timeOfLastModification = new Tooltip(localItemModified.getText());
                 localItemModified.setTooltip(timeOfLastModification);
@@ -133,7 +123,7 @@ public class StorageListViewItem extends ListCell<StorageItem> {
                     input = getClass().getResourceAsStream("/icons/wmaicon.png");
                 } else if (fileFormat.equalsIgnoreCase("wmv")) {
                     input = getClass().getResourceAsStream("/icons/wmvicon.png");
-                } else if (fileFormat.equalsIgnoreCase("xlsx")) {
+                } else if (fileFormat.equalsIgnoreCase("xlsx") || fileFormat.equalsIgnoreCase("xlsm")) {
                     input = getClass().getResourceAsStream("/icons/xlsxicon.png");
                 } else if (fileFormat.equalsIgnoreCase("txt")) {
                     input = getClass().getResourceAsStream("/icons/txticon.png");
@@ -161,7 +151,7 @@ public class StorageListViewItem extends ListCell<StorageItem> {
             }
             setText(null);
             setGraphic(localStorageItemCell);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }

@@ -11,7 +11,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class Server {
 
-    private static final int maxObjectSize = 1024 * 1024 * 20; // 20 MB
+    private static final int maxObjectSize = 1024 * 1024 * 1024; // 1 GB
 
     public Server() {
 
