@@ -8,9 +8,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Server {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
     private static final int maxObjectSize = 1024 * 1024 * 1024; // 1 GB
 
     public Server() {
@@ -25,13 +28,14 @@ public class Server {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()
-                                    .addLast(new ObjectDecoder(maxObjectSize, ClassResolvers.cacheDisabled(null)),
+                                    .addLast(
+                                            new ObjectDecoder(maxObjectSize, ClassResolvers.cacheDisabled(null)),
                                             new ObjectEncoder(),
                                             new ClientHandler());
                         }
                     });
             ChannelFuture future = bootstrap.bind(8888).sync();
-            System.out.println("Server started");
+            logger.info("Server started");
             future.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,6 +44,7 @@ public class Server {
             auth.shutdownGracefully();
         }
     }
+
     public static void main(String[] args) {
         new Server();
     }

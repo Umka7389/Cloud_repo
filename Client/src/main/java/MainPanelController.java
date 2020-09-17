@@ -9,9 +9,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,12 +23,14 @@ import java.util.ResourceBundle;
 public class MainPanelController implements Initializable {
     private String clientStorage = "Client/ClientStorage/";
     private LinkedList<File> folderCloudStorageListViews;
-
+    private int bufferSize = 256;
 
     @FXML
     ListView<StorageItem> listOfLocalElements;
     @FXML
-    Button localStorageUpdate;
+    Button localStorageSelect;
+    @FXML
+    Button cloudStorageSelect;
     @FXML
     VBox firstBlockMainPanel;
     @FXML
@@ -36,7 +38,7 @@ public class MainPanelController implements Initializable {
     @FXML
     ListView<StorageItem> listOfCloudStorageElements;
     @FXML
-    Button cloudStorageUpdate;
+    Button cloudStorageDelete;
     @FXML
     Button localStorageDelete;
 
@@ -65,27 +67,12 @@ public class MainPanelController implements Initializable {
                         Platform.runLater(() -> {
                             initializeListOfCloudStorageItems(folderCloudStorageListViews);
                         });
-                    } else if (object instanceof FileMessage) {
+                    } else if (object instanceof FileMessage ) {
                         FileMessage fileMessage = (FileMessage) object;
-                        if (fileMessage.isDirectory() && fileMessage.isEmpty()) {
-                            Path pathToNewEmptyDirectory = Paths.get(clientStorage + "" + fileMessage.getFileName());
-                            if (Files.exists(pathToNewEmptyDirectory)) {
-                                System.out.println("Такая директория уже существует");
-                            } else {
-                                Platform.runLater(() -> {
-                                    try {
-                                        Files.createDirectory(pathToNewEmptyDirectory);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-                            }
-                        } else {
-                            try {
-                                Files.write(Paths.get(clientStorage + "" + fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            }
+                        try {
+                            Files.write(Paths.get(clientStorage + "" + fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
                         }
                         Platform.runLater(() -> initializeListOfLocalStorageItems());
                     } else if (object.toString().equals("success")) {
@@ -104,25 +91,12 @@ public class MainPanelController implements Initializable {
         listOfLocalElements.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         File pathToLocalStorage = new File(clientStorage);
         File[] listOfLocalStorageFiles = pathToLocalStorage.listFiles();
-        if (listOfLocalStorageFiles.length > 0) {
             listOfLocalElements.setBackground(null);
             for (int i = 0; i < listOfLocalStorageFiles.length; i++) {
-                long initialSizeOfLocalFileOrDirectory = 0;
-                String nameOfLocalFileOrDirectory = listOfLocalStorageFiles[i].getName();
-                if (listOfLocalStorageFiles[i].isDirectory()) {
-                    try {
-                        initialSizeOfLocalFileOrDirectory = getActualSizeOfFolder(listOfLocalStorageFiles[i]);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    initialSizeOfLocalFileOrDirectory = listOfLocalStorageFiles[i].length();
-                }
                 String dateOfLastModification = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date(listOfLocalStorageFiles[i].lastModified()));
                 File pathToFileInLocalStorage = new File(listOfLocalStorageFiles[i].getAbsolutePath());
-                listOfLocalItems.addAll(new StorageItem(nameOfLocalFileOrDirectory, initialSizeOfLocalFileOrDirectory, false, dateOfLastModification, pathToFileInLocalStorage));
+                listOfLocalItems.addAll(new StorageItem(listOfLocalStorageFiles[i].getName(), listOfLocalStorageFiles[i].length(), false, dateOfLastModification, pathToFileInLocalStorage));
             }
-        }
         listOfLocalElements.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listOfLocalElements.setItems(listOfLocalItems);
         listOfLocalElements.setCellFactory(param -> new StorageListViewItem());
@@ -131,25 +105,12 @@ public class MainPanelController implements Initializable {
     public void initializeListOfCloudStorageItems(LinkedList<File> listOfCloudStorageFiles) {
         try {
             ObservableList<StorageItem> listOfCloudItems = FXCollections.observableArrayList();
-            if (!listOfCloudStorageFiles.isEmpty()) {
                 for (int i = 0; i < listOfCloudStorageFiles.size(); i++) {
-                    long initialSizeOfCloudFileOrDir = 0;
-                    String nameOfCloudFileOrDir = listOfCloudStorageFiles.get(i).getName();
-                    if (listOfCloudStorageFiles.get(i).isDirectory()) {
-                        try {
-                            initialSizeOfCloudFileOrDir = getActualSizeOfFolder(listOfCloudStorageFiles.get(i));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        initialSizeOfCloudFileOrDir = listOfCloudStorageFiles.get(i).length();
-                    }
                     String dateOfLastModification = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date(listOfCloudStorageFiles
                             .get(i).lastModified()));
                     File pathOfFileInCloudStorage = new File(listOfCloudStorageFiles.get(i).getAbsolutePath());
-                    listOfCloudItems.addAll(new StorageItem(nameOfCloudFileOrDir, initialSizeOfCloudFileOrDir, false, dateOfLastModification, pathOfFileInCloudStorage));
+                    listOfCloudItems.addAll(new StorageItem(listOfCloudStorageFiles.get(i).getName(), listOfCloudStorageFiles.get(i).length(), false, dateOfLastModification, pathOfFileInCloudStorage));
                 }
-            }
             listOfCloudStorageElements.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             listOfCloudStorageElements.setItems(listOfCloudItems);
             listOfCloudStorageElements.setCellFactory(param -> new StorageListViewItem());
@@ -158,11 +119,6 @@ public class MainPanelController implements Initializable {
         }
 
     }
-
-    private long getActualSizeOfFolder(File listOfLocalStorageFile) {
-        return 100L;
-    }
-
 
     public void selectAllFilesFromLocalStorage(ActionEvent actionEvent) {
         if (listOfLocalElements.getItems().size() == listOfLocalElements.getSelectionModel().getSelectedItems().size()) {
@@ -200,7 +156,6 @@ public class MainPanelController implements Initializable {
     }
 
     public void deleteChosenFilesFromLocalStorage(ActionEvent actionEvent) {
-
         for (int i = 0; i < getPathsOfSelectedFiles(listOfLocalElements).size(); i++) {
             try {
                 Files.delete(Paths.get(getPathsOfSelectedFiles(listOfLocalElements).get(i).getAbsolutePath()));
@@ -212,5 +167,6 @@ public class MainPanelController implements Initializable {
     }
 
     public void deleteChosenFilesFromCloudStorage(ActionEvent actionEvent) {
+        ServerConnectionController.sendDeletionMessage(CurrentLogin.getCurrentLogin(), getPathsOfSelectedFiles(listOfCloudStorageElements));
     }
 }

@@ -13,7 +13,8 @@ public class ServerConnectionController {
     private static Socket socket;
     private static ObjectEncoderOutputStream encOS;
     private static ObjectDecoderInputStream decIS;
-    private static final int maxObjectSize = 1024 * 1024 * 1024; // 1 GB
+
+    private static final int maxObjectSize = 1024*1024*1024; // 1 GB
 
 
     public static void startConnection() {
@@ -91,5 +92,14 @@ public class ServerConnectionController {
             e.printStackTrace();
         }
     }
-
+    public static void sendDeletionMessage(String login, LinkedList<File> filesToDelete) {
+        try {
+            if (!filesToDelete.isEmpty()) {
+                encOS.writeObject(new DeletionMessage(login, filesToDelete));
+                encOS.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

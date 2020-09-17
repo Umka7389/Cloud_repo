@@ -20,7 +20,7 @@
             <HBox alignment="CENTER" prefHeight="95" spacing="8" style="-fx-background-color: black;">
                 <Button fx:id="localStorageSend" onAction="#uploadFilesToCloudStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Upload
                 </Button>
-                <Button fx:id="localStorageUpdate" onAction="#selectAllFilesFromLocalStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Select all
+                <Button fx:id="localStorageSelect" onAction="#selectAllFilesFromLocalStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Select all
                 </Button>
                 <Button fx:id="localStorageDelete" onAction="#deleteChosenFilesFromLocalStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Delete
                 </Button>
@@ -41,9 +41,9 @@
             <HBox alignment="CENTER" prefHeight="95" spacing="8" style="-fx-background-color: black;">
                 <Button fx:id="cloudStorageDownload" onAction="#downloadFilesIntoLocalStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Download
                 </Button>
-                <Button fx:id="cloudStorageDelete" onAction="#selectAllFilesFromCloudStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Select All
+                <Button fx:id="cloudStorageSelect" onAction="#selectAllFilesFromCloudStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Select All
                 </Button>
-                <Button fx:id="cloudStorageUpdate" onAction="#deleteChosenFilesFromCloudStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Delete
+                <Button fx:id="cloudStorageDelete" onAction="#deleteChosenFilesFromCloudStorage" prefHeight="30" prefWidth="150" style="-fx-text-fill: white;">Delete
                 </Button>
             </HBox>
         </VBox>
